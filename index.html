@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Affeder misin?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffaccd;
+        --bg-hot: #ff78b0;
+        --ink: #51263a;
+        --soft-ink: #7b3a56;
+        --cream: #fff5f8;
+        --yes: #ffffff;
+        --yes-ink: #df2e72;
+        --no: #4d2638;
+        --no-ink: #fff5f8;
+        --shadow: rgba(112, 37, 69, 0.28);
+        --yes-width: clamp(145px, 41vw, 230px);
+        --yes-height: clamp(56px, 9svh, 76px);
+        --yes-font: clamp(1.08rem, 4.2vw, 1.45rem);
+        --no-width: clamp(132px, 35vw, 190px);
+        --no-opacity: 1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      body {
+        color: var(--ink);
+        font-family: "Baloo 2", "Nunito", "Trebuchet MS", sans-serif;
+        background: var(--bg);
+        letter-spacing: 0;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      body[data-level="1"] {
+        --yes-width: clamp(174px, 52vw, 292px);
+        --yes-height: clamp(64px, 10svh, 90px);
+        --yes-font: clamp(1.22rem, 4.8vw, 1.72rem);
+        --no-width: clamp(118px, 30vw, 164px);
+      }
+
+      body[data-level="2"] {
+        --yes-width: clamp(214px, 64vw, 366px);
+        --yes-height: clamp(74px, 12svh, 108px);
+        --yes-font: clamp(1.36rem, 5.6vw, 2rem);
+        --no-width: clamp(104px, 26vw, 146px);
+      }
+
+      body[data-level="3"] {
+        --yes-width: clamp(254px, 76vw, 458px);
+        --yes-height: clamp(86px, 14svh, 126px);
+        --yes-font: clamp(1.52rem, 6.4vw, 2.36rem);
+        --no-width: clamp(92px, 22vw, 126px);
+      }
+
+      body[data-level="4"] {
+        --yes-width: min(92vw, 570px);
+        --yes-height: clamp(98px, 16svh, 140px);
+        --yes-font: clamp(1.85rem, 7.6vw, 3rem);
+        --no-width: 118px;
+        --no-opacity: 0.75;
+      }
+
+      .app {
+        position: relative;
+        display: grid;
+        min-height: 100svh;
+        width: 100%;
+        place-items: center;
+        overflow: hidden;
+        padding: clamp(10px, 3vw, 30px);
+        background:
+          radial-gradient(circle at 50% -12%, rgba(255, 255, 255, 0.52), transparent 32svh),
+          linear-gradient(145deg, var(--bg), #ffc0d7 48%, var(--bg-hot));
+        isolation: isolate;
+      }
+
+      .app::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: 0.22;
+        background-image:
+          radial-gradient(circle at 10% 20%, #fff 0 7px, transparent 8px),
+          radial-gradient(circle at 12% 24%, #fff 0 4px, transparent 5px),
+          radial-gradient(circle at 8% 25%, #fff 0 4px, transparent 5px),
+          radial-gradient(circle at 15% 25%, #fff 0 4px, transparent 5px);
+        background-size: 138px 138px;
+        transform: rotate(-8deg) scale(1.12);
+      }
+
+      .stage {
+        display: grid;
+        width: min(690px, 100%);
+        height: min(760px, calc(100svh - 22px));
+        grid-template-rows: auto auto minmax(40px, auto) auto;
+        align-content: center;
+        justify-items: center;
+        gap: clamp(10px, 2.3svh, 22px);
+        text-align: center;
+      }
+
+      .main-cat {
+        width: clamp(78px, 20svmin, 142px);
+        aspect-ratio: 1;
+        filter: drop-shadow(0 16px 18px rgba(112, 37, 69, 0.22));
+        animation: sleepy-cat 2.4s ease-in-out infinite;
+        user-select: none;
+      }
+
+      h1 {
+        max-width: 11.8ch;
+        margin: 0;
+        font-size: clamp(2.15rem, 8.6vw, 5.15rem);
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: 0;
+        text-wrap: balance;
+      }
+
+      .message {
+        display: grid;
+        min-height: clamp(48px, 9svh, 74px);
+        max-width: min(600px, 94vw);
+        margin: 0;
+        place-items: center;
+        color: var(--soft-ink);
+        font-size: clamp(1.02rem, 4.2vw, 1.55rem);
+        font-weight: 800;
+        line-height: 1.05;
+        text-wrap: balance;
+      }
+
+      .answers {
+        position: relative;
+        display: flex;
+        width: min(610px, 100%);
+        min-height: clamp(150px, 27svh, 220px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(10px, 2.8vw, 18px);
+      }
+
+      .choice {
+        display: inline-grid;
+        min-width: 0;
+        place-items: center;
+        border: 0;
+        border-radius: 22px;
+        cursor: pointer;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: 0;
+        text-align: center;
+        flex: 0 0 auto;
+        transition:
+          width 260ms ease,
+          height 260ms ease,
+          transform 180ms ease,
+          opacity 180ms ease,
+          color 180ms ease,
+          background 180ms ease,
+          box-shadow 180ms ease;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .choice:focus-visible {
+        outline: 4px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 4px;
+      }
+
+      .yes {
+        width: var(--yes-width);
+        height: var(--yes-height);
+        padding: 0 clamp(14px, 4vw, 28px);
+        color: var(--yes-ink);
+        background: var(--yes);
+        box-shadow:
+          0 18px 42px var(--shadow),
+          inset 0 -5px 0 rgba(223, 46, 114, 0.12);
+        font-size: var(--yes-font);
+      }
+
+      .yes:active {
+        transform: translateY(3px) scale(0.99);
+      }
+
+      .no {
+        width: var(--no-width);
+        height: clamp(48px, 8svh, 64px);
+        padding: 0 12px;
+        color: var(--no-ink);
+        background: var(--no);
+        box-shadow: 0 12px 28px rgba(81, 38, 58, 0.22);
+        font-size: clamp(0.82rem, 3.2vw, 1rem);
+        opacity: var(--no-opacity);
+      }
+
+      .no:active {
+        transform: rotate(-2deg) scale(0.96);
+      }
+
+      .cat-peek {
+        position: absolute;
+        width: clamp(66px, 17vw, 120px);
+        opacity: 0.45;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .cat-peek.one {
+        left: clamp(-18px, 4vw, 42px);
+        bottom: clamp(18px, 5svh, 54px);
+        transform: rotate(-10deg);
+      }
+
+      .cat-peek.two {
+        right: clamp(-18px, 4vw, 42px);
+        top: clamp(16px, 5svh, 54px);
+        transform: rotate(12deg) scaleX(-1);
+      }
+
+      .cornered .main-cat,
+      .cornered h1,
+      .cornered .message,
+      .cornered .cat-peek {
+        opacity: 0;
+        transition: opacity 220ms ease;
+      }
+
+      .cornered .answers {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        width: 100vw;
+        min-height: 100svh;
+        padding: 0;
+      }
+
+      .cornered .yes {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100svh;
+        border-radius: 0;
+        padding: clamp(20px, 7vw, 80px);
+        font-size: clamp(2.8rem, 15vw, 8.5rem);
+        line-height: 0.88;
+        color: #ffffff;
+        background: #ef3a88;
+        box-shadow: none;
+      }
+
+      .cornered .no {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.2);
+      }
+
+      .party {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        padding: 18px;
+        pointer-events: none;
+        opacity: 0;
+        transform: scale(0.98);
+        transition:
+          opacity 260ms ease,
+          transform 260ms ease,
+          background 260ms ease;
+      }
+
+      .accepted .party {
+        opacity: 1;
+        transform: scale(1);
+        background:
+          radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.42), transparent 34svh),
+          #ef3a88;
+      }
+
+      .accepted .stage,
+      .accepted .cat-peek {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 160ms ease;
+      }
+
+      .accepted .answers,
+      .accepted .choice {
+        display: none;
+      }
+
+      .party-title {
+        position: relative;
+        z-index: 8;
+        width: min(760px, 94vw);
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(2.45rem, 12vw, 8rem);
+        font-weight: 900;
+        line-height: 0.86;
+        text-align: center;
+        text-shadow:
+          0 7px 0 rgba(81, 38, 58, 0.16),
+          0 24px 52px rgba(81, 38, 58, 0.36);
+        text-wrap: balance;
+      }
+
+      .dancer,
+      .float-cat {
+        position: absolute;
+        z-index: 2;
+        display: grid;
+        aspect-ratio: 1;
+        place-items: center;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .dancer {
+        width: clamp(84px, 20vw, 158px);
+        filter: drop-shadow(0 14px 15px rgba(81, 38, 58, 0.2));
+        animation:
+          cat-pop 420ms ease both,
+          cat-dance 620ms ease-in-out 420ms infinite alternate;
+      }
+
+      .dancer.one {
+        left: 7vw;
+        bottom: 10svh;
+      }
+
+      .dancer.two {
+        right: 6vw;
+        bottom: 12svh;
+        animation-delay: 110ms, 530ms;
+        transform: scaleX(-1);
+      }
+
+      .dancer.three {
+        left: 14vw;
+        top: 10svh;
+        width: clamp(68px, 16vw, 128px);
+        animation-delay: 180ms, 600ms;
+      }
+
+      .dancer.four {
+        right: 15vw;
+        top: 9svh;
+        width: clamp(68px, 16vw, 128px);
+        animation-delay: 240ms, 660ms;
+        transform: scaleX(-1);
+      }
+
+      .float-cat {
+        width: clamp(54px, 13vw, 104px);
+        filter: drop-shadow(0 10px 12px rgba(81, 38, 58, 0.2));
+        animation:
+          cat-pop 420ms ease both,
+          float-sticker 2.1s ease-in-out 420ms infinite alternate;
+      }
+
+      .float-cat.a {
+        left: 3vw;
+        top: 23svh;
+        animation-delay: 70ms, 490ms;
+      }
+
+      .float-cat.b {
+        right: 5vw;
+        top: 27svh;
+        animation-delay: 160ms, 580ms;
+        transform: rotate(8deg);
+      }
+
+      .float-cat.c {
+        left: 24vw;
+        bottom: 19svh;
+        animation-delay: 240ms, 660ms;
+        transform: rotate(-8deg);
+      }
+
+      .float-cat.d {
+        right: 26vw;
+        bottom: 17svh;
+        animation-delay: 320ms, 740ms;
+      }
+
+      .float-cat.e {
+        left: 43vw;
+        top: 8svh;
+        width: clamp(46px, 10vw, 82px);
+        animation-delay: 420ms, 840ms;
+      }
+
+      .float-cat.f {
+        right: 42vw;
+        bottom: 7svh;
+        width: clamp(46px, 10vw, 82px);
+        animation-delay: 520ms, 940ms;
+        transform: rotate(7deg);
+      }
+
+      .gif-frame,
+      .gif-frame .tenor-gif-embed,
+      .gif-frame iframe {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .gif-frame {
+        overflow: hidden;
+        color: transparent;
+        font-size: 0;
+        line-height: 0;
+      }
+
+      .gif-frame a {
+        color: transparent;
+        font-size: 0;
+      }
+
+      .music-mount {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .music-mount iframe {
+        width: 1px;
+        height: 1px;
+        border: 0;
+      }
+
+      .confetti {
+        position: fixed;
+        left: var(--x);
+        top: -12px;
+        z-index: 50;
+        width: var(--w);
+        height: var(--h);
+        border-radius: 3px;
+        background: var(--c);
+        pointer-events: none;
+        animation: confetti-fall var(--d) linear forwards;
+      }
+
+      .shake {
+        animation: nope 280ms ease;
+      }
+
+      @keyframes sleepy-cat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+
+        50% {
+          transform: translateY(-8px) rotate(2deg);
+        }
+      }
+
+      @keyframes nope {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+
+        25% {
+          transform: translateX(-7px);
+        }
+
+        50% {
+          transform: translateX(7px);
+        }
+
+        75% {
+          transform: translateX(-4px);
+        }
+      }
+
+      @keyframes cat-pop {
+        from {
+          opacity: 0;
+          transform: translateY(34px) scale(0.2) rotate(-18deg);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1) rotate(0);
+        }
+      }
+
+      @keyframes cat-dance {
+        0% {
+          translate: 0 0;
+          rotate: -8deg;
+        }
+
+        100% {
+          translate: 0 -18px;
+          rotate: 8deg;
+        }
+      }
+
+      @keyframes float-sticker {
+        0% {
+          translate: -5px 0;
+          rotate: -6deg;
+        }
+
+        100% {
+          translate: 5px -16px;
+          rotate: 7deg;
+        }
+      }
+
+      @keyframes confetti-fall {
+        to {
+          transform: translate3d(var(--dx), 112svh, 0) rotate(var(--r));
+          opacity: 0;
+        }
+      }
+
+      @media (max-height: 620px) {
+        .stage {
+          gap: 8px;
+        }
+
+        .main-cat {
+          width: clamp(62px, 16svmin, 92px);
+        }
+
+        .message {
+          min-height: 42px;
+        }
+
+        .answers {
+          min-height: 112px;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .answers {
+          gap: 8px;
+        }
+
+        .choice {
+          border-radius: 18px;
+        }
+
+        .no {
+          padding: 0 8px;
+        }
+
+        .party-title {
+          width: min(360px, 92vw);
+          font-size: clamp(2.45rem, 13vw, 4rem);
+          line-height: 0.92;
+        }
+
+        .dancer {
+          width: clamp(70px, 23vw, 96px);
+        }
+
+        .dancer.one {
+          left: 6vw;
+          bottom: 10svh;
+        }
+
+        .dancer.two {
+          right: 6vw;
+          bottom: 10svh;
+        }
+
+        .dancer.three {
+          left: 7vw;
+          top: 8svh;
+        }
+
+        .dancer.four {
+          right: 7vw;
+          top: 8svh;
+        }
+
+        .float-cat {
+          width: clamp(48px, 17vw, 72px);
+        }
+
+        .float-cat.a {
+          left: -2vw;
+          top: 28svh;
+        }
+
+        .float-cat.b {
+          right: -2vw;
+          top: 29svh;
+        }
+
+        .float-cat.c {
+          left: 11vw;
+          bottom: 22svh;
+        }
+
+        .float-cat.d {
+          right: 11vw;
+          bottom: 22svh;
+        }
+
+        .float-cat.e,
+        .float-cat.f {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 1ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 1ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-level="0">
+    <main class="app" aria-label="Affet beni ekranı">
+      <img class="cat-peek one" src="assets/cat-dance.png" alt="" />
+      <img class="cat-peek two" src="assets/cat-dance.png" alt="" />
+
+      <section class="stage" aria-live="polite">
+        <img class="main-cat" src="assets/cat-dance.png" alt="Pembe yanaklı kedi" />
+        <h1>Güzelim, bugün eşeklik ettim ben. Affeder misin?</h1>
+        <p class="message" id="message">Kedi komitesi doğru cevabı bekliyor.</p>
+
+        <div class="answers">
+          <button class="choice yes" id="yesButton" type="button">Affettim bea</button>
+          <button class="choice no" id="noButton" type="button">Yok</button>
+        </div>
+      </section>
+
+      <section class="party" id="party" aria-hidden="true">
+        <p class="party-title">Affedildim bea!</p>
+        <div class="dancer one">
+          <div class="gif-frame tenor-gif-embed" data-postid="1801489096118920303" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/scuba-scuba-cat-nick-wilde-stank-dance-gif-1801489096118920303">Scuba Scuba Cat Sticker</a>from <a href="https://tenor.com/search/scuba-stickers">Scuba Stickers</a></div>
+        </div>
+        <div class="dancer two">
+          <div class="gif-frame tenor-gif-embed" data-postid="1801489096118920303" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/scuba-scuba-cat-nick-wilde-stank-dance-gif-1801489096118920303">Scuba Scuba Cat Sticker</a>from <a href="https://tenor.com/search/scuba-stickers">Scuba Stickers</a></div>
+        </div>
+        <div class="dancer three">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="dancer four">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat a">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat b">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat c">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat d">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat e">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+        <div class="float-cat f">
+          <div class="gif-frame tenor-gif-embed" data-postid="3600307330304556999" data-share-method="host" data-aspect-ratio="1.02469" data-width="100%"><a href="https://tenor.com/view/excited-cat-gif-3600307330304556999">Excited Cat Sticker</a>from <a href="https://tenor.com/search/excited+cat-stickers">Excited Cat Stickers</a></div>
+        </div>
+      </section>
+      <div class="music-mount" id="musicMount" aria-hidden="true"></div>
+    </main>
+
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    <script>
+      const yesButton = document.querySelector("#yesButton");
+      const noButton = document.querySelector("#noButton");
+      const message = document.querySelector("#message");
+      const party = document.querySelector("#party");
+      const musicMount = document.querySelector("#musicMount");
+
+      const guiltTrip = [
+        "Yanlış bastın galiba, affetmen gerek.",
+        "Makyajın çok güzel, lütfen affet.",
+        "Kediler bile affet diyor, bak kalpleri kırıldı.",
+        "Son uyarı: Affettim bea tuşu kontrolü ele alıyor.",
+        "Başka şansın kalmadı güzelim. O tuşa basıyoruz."
+      ];
+
+      const noLabels = [
+        "Yok",
+        "Rüyanda görürsün",
+        "Banane",
+        "Olmaz",
+        "Asla",
+        "Cık"
+      ];
+
+      let mistakes = 0;
+      let confettiTimer;
+      let celebrationStopTimer;
+
+      function setMistakeLevel() {
+        mistakes += 1;
+        const level = Math.min(mistakes, 4);
+        document.body.dataset.level = String(level);
+        message.textContent = guiltTrip[Math.min(mistakes - 1, guiltTrip.length - 1)];
+        noButton.textContent = noLabels[Math.min(mistakes, noLabels.length - 1)];
+
+        noButton.classList.remove("shake");
+        void noButton.offsetWidth;
+        noButton.classList.add("shake");
+
+        if (mistakes >= 5) {
+          document.body.classList.add("cornered");
+          yesButton.textContent = "Affettim bea";
+          message.textContent = guiltTrip[guiltTrip.length - 1];
+        }
+      }
+
+      function randomBetween(min, max) {
+        return min + Math.random() * (max - min);
+      }
+
+      function throwConfetti(amount = 120) {
+        const colors = ["#ffffff", "#ffec63", "#ef3a88", "#8ef7d2", "#7b3a56"];
+
+        for (let i = 0; i < amount; i += 1) {
+          const piece = document.createElement("span");
+          piece.className = "confetti";
+          piece.style.setProperty("--x", `${randomBetween(0, 100)}vw`);
+          piece.style.setProperty("--dx", `${randomBetween(-34, 34)}vw`);
+          piece.style.setProperty("--w", `${randomBetween(7, 13)}px`);
+          piece.style.setProperty("--h", `${randomBetween(12, 24)}px`);
+          piece.style.setProperty("--d", `${randomBetween(1.6, 3.6)}s`);
+          piece.style.setProperty("--r", `${randomBetween(260, 980)}deg`);
+          piece.style.setProperty("--c", colors[i % colors.length]);
+          document.body.appendChild(piece);
+          piece.addEventListener("animationend", () => piece.remove());
+        }
+      }
+
+      function startLongCelebration() {
+        window.clearInterval(confettiTimer);
+        window.clearTimeout(celebrationStopTimer);
+        throwConfetti(150);
+        confettiTimer = window.setInterval(() => throwConfetti(70), 850);
+        celebrationStopTimer = window.setTimeout(() => {
+          window.clearInterval(confettiTimer);
+          confettiTimer = null;
+        }, 60000);
+      }
+
+      function startYoutubeMusic() {
+        if (document.querySelector("#youtubeMusic")) return;
+
+        const iframe = document.createElement("iframe");
+        const videoId = "Od-6uzcLGqw";
+        iframe.id = "youtubeMusic";
+        iframe.title = "Kutlama müziği";
+        iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&rel=0&playsinline=1&mute=0`;
+        musicMount.appendChild(iframe);
+      }
+
+      function celebrate() {
+        document.body.classList.add("accepted");
+        party.setAttribute("aria-hidden", "false");
+        yesButton.disabled = true;
+        noButton.disabled = true;
+        message.textContent = "Konfeti hazır, kediler piste çıktı.";
+        startLongCelebration();
+        startYoutubeMusic();
+      }
+
+      noButton.addEventListener("click", setMistakeLevel);
+      yesButton.addEventListener("click", celebrate);
+    </script>
+  </body>
+</html>
